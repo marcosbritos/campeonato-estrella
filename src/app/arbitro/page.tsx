@@ -4,7 +4,7 @@ import { supabase, getMatches, getPlayers, addGoal, addCard, removeGoal, removeC
 import type { Match, Player, Goal, Card } from '@/lib/types'
 import StarLogo from '@/components/StarLogo'
 
-const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN ?? '2204'
+const ADMIN_PIN = '2204'
 
 type Step = 'pin' | 'select-match' | 'live'
 
