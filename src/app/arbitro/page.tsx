@@ -4,7 +4,7 @@ import { supabase, getMatches, getPlayers, addGoal, addCard, removeGoal, removeC
 import type { Match, Player, Goal, Card } from '@/lib/types'
 import StarLogo from '@/components/StarLogo'
 
-const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN ?? 'estrella2024'
+const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN ?? '2204'
 
 type Step = 'pin' | 'select-match' | 'live'
 
@@ -12,12 +12,17 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
   const [val, setVal] = useState('')
   const [err, setErr] = useState(false)
 
-  function check() {
-    if (val === ADMIN_PIN || val === 'estrella2024') {
-      onUnlock()
-    } else {
-      setErr(true)
-      setVal('')
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const v = e.target.value.replace(/\D/g, '').slice(0, 4)
+    setVal(v)
+    setErr(false)
+    if (v.length === 4) {
+      if (v === ADMIN_PIN) {
+        onUnlock()
+      } else {
+        setErr(true)
+        setVal('')
+      }
     }
   }
 
@@ -26,26 +31,21 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
       <StarLogo size={64} />
       <div className="text-center">
         <h1 className="text-xl font-black text-white">Panel Árbitro</h1>
-        <p className="text-xs text-gray-500 mt-1">Ingresá el PIN de acceso</p>
+        <p className="text-xs text-gray-500 mt-1">Ingresá el PIN de 4 dígitos</p>
       </div>
       <input
         type="password"
         inputMode="numeric"
+        pattern="[0-9]*"
+        maxLength={4}
         value={val}
-        onChange={(e) => { setVal(e.target.value); setErr(false) }}
-        onKeyDown={(e) => e.key === 'Enter' && check()}
-        placeholder="PIN"
+        onChange={handleChange}
+        placeholder="••••"
         className={`w-full max-w-[200px] bg-[#141414] border ${
           err ? 'border-red-600' : 'border-[#2a2a2a]'
         } rounded-xl text-center text-2xl font-black text-white py-4 tracking-widest focus:outline-none focus:border-[#f5c518]`}
       />
       {err && <p className="text-xs text-red-500">PIN incorrecto</p>}
-      <button
-        onClick={check}
-        className="w-full max-w-[200px] bg-[#f5c518] text-black font-black py-4 rounded-xl text-base active:scale-95 transition-transform"
-      >
-        ENTRAR
-      </button>
     </div>
   )
 }
