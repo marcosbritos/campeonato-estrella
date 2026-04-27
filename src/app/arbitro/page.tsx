@@ -27,11 +27,11 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center gap-6 px-8">
+    <div style={{ minHeight: '100vh', background: 'var(--ce-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, padding: '0 32px' }}>
       <StarLogo size={64} />
-      <div className="text-center">
-        <h1 className="text-xl font-black text-white">Panel Árbitro</h1>
-        <p className="text-xs text-gray-500 mt-1">Ingresá el PIN de 4 dígitos</p>
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: 'var(--ce-fg)' }}>Panel Árbitro</h1>
+        <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--ce-fg-4)' }}>Ingresá el PIN de 4 dígitos</p>
       </div>
       <input
         type="password"
@@ -41,116 +41,83 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
         value={val}
         onChange={handleChange}
         placeholder="••••"
-        className={`w-full max-w-[200px] bg-[#141414] border ${
-          err ? 'border-red-600' : 'border-[#2a2a2a]'
-        } rounded-xl text-center text-2xl font-black text-white py-4 tracking-widest focus:outline-none focus:border-[#f5c518]`}
+        style={{
+          width: '100%', maxWidth: 200, background: 'var(--ce-card)', border: `1px solid ${err ? 'var(--ce-loss)' : 'var(--ce-border)'}`,
+          borderRadius: 12, textAlign: 'center', fontSize: 24, fontWeight: 900, color: 'var(--ce-fg)',
+          padding: '16px', letterSpacing: '.4em', outline: 'none',
+        }}
       />
-      {err && <p className="text-xs text-red-500">PIN incorrecto</p>}
+      {err && <p style={{ margin: 0, fontSize: 12, color: 'var(--ce-loss)' }}>PIN incorrecto</p>}
     </div>
   )
 }
 
-function EventButton({
-  label,
-  color,
-  onClick,
-}: {
-  label: string
-  color: 'yellow' | 'red' | 'green' | 'blue'
-  onClick: () => void
-}) {
-  const colors = {
-    yellow: 'bg-[#f5c518] text-black',
-    red: 'bg-red-600 text-white',
-    green: 'bg-green-600 text-white',
-    blue: 'bg-blue-600 text-white',
-  }
+function EventButton({ label, color, onClick }: { label: string; color: 'yellow' | 'red' | 'green'; onClick: () => void }) {
+  const bg = color === 'yellow' ? 'var(--ce-warn)' : color === 'red' ? 'var(--ce-loss)' : 'var(--ce-win)'
+  const fg = color === 'yellow' ? '#000' : '#fff'
   return (
-    <button
-      onClick={onClick}
-      className={`${colors[color]} font-black text-sm py-4 px-3 rounded-xl active:scale-95 transition-transform text-center leading-tight`}
-    >
-      {label}
-    </button>
+    <button onClick={onClick} className="tap" style={{
+      background: bg, color: fg, fontWeight: 900, fontSize: 13, padding: '16px 8px',
+      borderRadius: 12, border: 'none', cursor: 'pointer', textAlign: 'center', lineHeight: 1.2,
+    }}>{label}</button>
   )
 }
 
-type EventAction = {
-  type: 'goal' | 'yellow' | 'red'
-  teamId: string
-  teamName: string
-}
+type EventAction = { type: 'goal' | 'yellow' | 'red'; teamId: string; teamName: string }
 
-function EventModal({
-  action,
-  players,
-  onConfirm,
-  onCancel,
-}: {
-  action: EventAction
-  players: Player[]
-  onConfirm: (playerId: string | null, minute: number | null) => void
-  onCancel: () => void
+function EventModal({ action, players, onConfirm, onCancel }: {
+  action: EventAction; players: Player[];
+  onConfirm: (playerId: string | null, minute: number | null) => void;
+  onCancel: () => void;
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null)
-  const [minute, setMinute] = useState<string>('')
+  const [minute, setMinute] = useState('')
 
   const label = action.type === 'goal' ? '⚽ Gol' : action.type === 'yellow' ? '🟨 Amarilla' : '🟥 Roja'
-  const color = action.type === 'goal' ? 'text-green-400' : action.type === 'yellow' ? 'text-[#f5c518]' : 'text-red-500'
+  const accentColor = action.type === 'goal' ? 'var(--ce-win)' : action.type === 'yellow' ? 'var(--ce-warn)' : 'var(--ce-loss)'
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex flex-col">
-      <div className="bg-[#141414] border-b border-[#222] px-4 py-4 flex items-center justify-between">
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.85)', zIndex: 50, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: 'var(--ce-bg-2)', borderBottom: '1px solid var(--ce-border)', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p className={`text-lg font-black ${color}`}>{label}</p>
-          <p className="text-xs text-gray-400">{action.teamName}</p>
+          <p style={{ margin: 0, fontSize: 18, fontWeight: 900, color: accentColor }}>{label}</p>
+          <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ce-fg-3)' }}>{action.teamName}</p>
         </div>
-        <button onClick={onCancel} className="text-gray-500 text-2xl font-light">✕</button>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', color: 'var(--ce-fg-3)', fontSize: 22, cursor: 'pointer', lineHeight: 1 }}>✕</button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-3">Jugador (opcional)</p>
-        <div className="grid grid-cols-2 gap-2 mb-6">
-          <button
-            onClick={() => setSelectedPlayer(null)}
-            className={`py-3 rounded-xl text-sm font-bold border transition-colors ${
-              selectedPlayer === null ? 'border-[#f5c518] text-[#f5c518] bg-[#1a1500]' : 'border-[#222] text-gray-500'
-            }`}
-          >
-            Sin asignar
-          </button>
-          {players.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setSelectedPlayer(p.id)}
-              className={`py-3 px-2 rounded-xl text-xs font-bold border transition-colors text-left ${
-                selectedPlayer === p.id ? 'border-[#f5c518] text-[#f5c518] bg-[#1a1500]' : 'border-[#222] text-gray-500'
-              }`}
-            >
-              <span className="text-base font-black mr-1">#{p.shirt_number}</span>
-              {p.name}
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+        <p style={{ margin: '0 0 10px', fontSize: 10, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--ce-fg-4)' }}>Jugador (opcional)</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
+          <button onClick={() => setSelectedPlayer(null)} style={{
+            padding: '12px 8px', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            background: selectedPlayer === null ? 'rgba(0,240,255,.08)' : 'var(--ce-card)',
+            border: `1px solid ${selectedPlayer === null ? 'var(--ce-cyan)' : 'var(--ce-border)'}`,
+            color: selectedPlayer === null ? 'var(--ce-cyan)' : 'var(--ce-fg-3)',
+          }}>Sin asignar</button>
+          {players.map(p => (
+            <button key={p.id} onClick={() => setSelectedPlayer(p.id)} style={{
+              padding: '12px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'left',
+              background: selectedPlayer === p.id ? 'rgba(0,240,255,.08)' : 'var(--ce-card)',
+              border: `1px solid ${selectedPlayer === p.id ? 'var(--ce-cyan)' : 'var(--ce-border)'}`,
+              color: selectedPlayer === p.id ? 'var(--ce-cyan)' : 'var(--ce-fg-3)',
+            }}>
+              <span style={{ fontSize: 14, fontWeight: 900, marginRight: 4 }}>#{p.shirt_number}</span>{p.name}
             </button>
           ))}
         </div>
 
-        <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Minuto (opcional)</p>
-        <input
-          type="number"
-          inputMode="numeric"
-          value={minute}
-          onChange={(e) => setMinute(e.target.value)}
-          placeholder="Ej: 23"
-          className="w-full bg-[#0f0f0f] border border-[#222] rounded-xl px-4 py-3 text-white text-base focus:outline-none focus:border-[#f5c518]"
-        />
+        <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--ce-fg-4)' }}>Minuto (opcional)</p>
+        <input type="number" inputMode="numeric" value={minute} onChange={e => setMinute(e.target.value)} placeholder="Ej: 23"
+          style={{ width: '100%', background: 'var(--ce-card)', border: '1px solid var(--ce-border)', borderRadius: 10, padding: '12px 16px', color: 'var(--ce-fg)', fontSize: 16, outline: 'none' }} />
       </div>
 
-      <div className="p-4 border-t border-[#222]">
-        <button
-          onClick={() => onConfirm(selectedPlayer, minute ? parseInt(minute) : null)}
-          className="w-full bg-[#f5c518] text-black font-black py-4 rounded-xl text-base active:scale-95 transition-transform"
-        >
-          CONFIRMAR {label}
-        </button>
+      <div style={{ padding: 16, borderTop: '1px solid var(--ce-border)' }}>
+        <button onClick={() => onConfirm(selectedPlayer, minute ? parseInt(minute) : null)} className="tap" style={{
+          width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer',
+          background: `linear-gradient(135deg, var(--ce-cyan-3), var(--ce-cyan))`,
+          color: '#000', fontWeight: 900, fontSize: 15, letterSpacing: '.06em',
+        }}>CONFIRMAR {label}</button>
       </div>
     </div>
   )
@@ -167,15 +134,11 @@ export default function ArbitroPage() {
   const [eventAction, setEventAction] = useState<EventAction | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Load pending/live matches after unlock
   useEffect(() => {
     if (step !== 'select-match') return
     setLoading(true)
     getMatches()
-      .then((data) => {
-        const active = (data as Match[]).filter((m) => m.status !== 'finished')
-        setMatches(active)
-      })
+      .then(data => { setMatches((data as Match[]).filter(m => m.status !== 'finished')) })
       .finally(() => setLoading(false))
   }, [step])
 
@@ -192,8 +155,6 @@ export default function ArbitroPage() {
     setGoals((goalsRes.data ?? []) as Goal[])
     setCards((cardsRes.data ?? []) as Card[])
     setActiveMatch(match)
-
-    // Mark as live
     if (match.status === 'pending') {
       await updateMatchStatus(match.id, 'live', 0, 0)
       setActiveMatch({ ...match, status: 'live' })
@@ -208,7 +169,6 @@ export default function ArbitroPage() {
     try {
       if (eventAction.type === 'goal') {
         await addGoal(activeMatch.id, eventAction.teamId, playerId, minute)
-        // Update score locally
         const isHome = eventAction.teamId === activeMatch.home_team_id
         const updated = {
           ...activeMatch,
@@ -220,7 +180,6 @@ export default function ArbitroPage() {
       } else {
         await addCard(activeMatch.id, eventAction.teamId, playerId, eventAction.type, minute)
       }
-      // Refresh events
       const [goalsRes, cardsRes] = await Promise.all([
         supabase.from('goals').select('*, player:players(id,name,shirt_number)').eq('match_id', activeMatch.id),
         supabase.from('cards').select('*, player:players(id,name,shirt_number)').eq('match_id', activeMatch.id),
@@ -243,51 +202,42 @@ export default function ArbitroPage() {
     setActiveMatch(null)
   }
 
-  // --- RENDER ---
-
-  if (step === 'pin') {
-    return <PinGate onUnlock={() => setStep('select-match')} />
-  }
+  if (step === 'pin') return <PinGate onUnlock={() => setStep('select-match')} />
 
   if (step === 'select-match') {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] p-4">
-        <div className="flex items-center gap-3 mb-6">
+      <div style={{ minHeight: '100vh', background: 'var(--ce-bg)', padding: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <StarLogo size={36} />
           <div>
-            <h1 className="text-lg font-black text-white">Panel Árbitro</h1>
-            <p className="text-xs text-gray-500">Seleccioná el partido</p>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: 'var(--ce-fg)' }}>Panel Árbitro</h1>
+            <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--ce-fg-4)' }}>Seleccioná el partido</p>
           </div>
         </div>
-
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 rounded-full border-2 border-[#f5c518] border-t-transparent animate-spin" />
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid var(--ce-cyan)', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
           </div>
         ) : matches.length === 0 ? (
-          <div className="text-center py-12 text-gray-600 text-sm">No hay partidos pendientes</div>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--ce-fg-4)', fontSize: 14 }}>No hay partidos pendientes</div>
         ) : (
-          <div className="space-y-3">
-            {matches.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => selectMatch(m)}
-                className="w-full bg-[#141414] border border-[#222] rounded-xl p-4 text-left active:scale-[0.98] transition-transform"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] text-gray-600 uppercase font-bold">
-                    Zona {m.zone} · Fecha {m.round}
-                  </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {matches.map(m => (
+              <button key={m.id} onClick={() => selectMatch(m)} className="tap glass" style={{
+                width: '100%', borderRadius: 14, padding: 16, textAlign: 'left', cursor: 'pointer', border: '1px solid var(--ce-border)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.15em', color: 'var(--ce-fg-4)', textTransform: 'uppercase' }}>Zona {m.zone} · Fecha {m.round}</span>
                   {m.status === 'live' && (
-                    <span className="text-[10px] text-red-500 font-black uppercase flex items-center gap-1">
-                      <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500" /> En vivo
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 900, color: 'var(--ce-loss)', textTransform: 'uppercase' }}>
+                      <span className="live-dot" style={{ width: 6, height: 6 }} /> En vivo
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="flex-1 text-sm font-black text-white text-right">{m.home_team?.name}</span>
-                  <span className="text-gray-600 text-sm">vs</span>
-                  <span className="flex-1 text-sm font-black text-white">{m.away_team?.name}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ flex: 1, fontSize: 13, fontWeight: 900, color: 'var(--ce-fg)', textAlign: 'right' }}>{m.home_team?.name}</span>
+                  <span style={{ color: 'var(--ce-fg-4)', fontSize: 12 }}>vs</span>
+                  <span style={{ flex: 1, fontSize: 13, fontWeight: 900, color: 'var(--ce-fg)' }}>{m.away_team?.name}</span>
                 </div>
               </button>
             ))}
@@ -297,13 +247,10 @@ export default function ArbitroPage() {
     )
   }
 
-  // LIVE MATCH
   if (!activeMatch) return null
-  const homeGoals = goals.filter((g) => g.team_id === activeMatch.home_team_id && !g.is_own_goal).length
-  const awayGoals = goals.filter((g) => g.team_id === activeMatch.away_team_id && !g.is_own_goal).length
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div style={{ minHeight: '100vh', background: 'var(--ce-bg)', display: 'flex', flexDirection: 'column' }}>
       {eventAction && (
         <EventModal
           action={eventAction}
@@ -314,93 +261,58 @@ export default function ArbitroPage() {
       )}
 
       {/* Scoreboard */}
-      <div className="bg-[#141414] border-b border-[#222] px-4 pt-4 pb-5">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] text-gray-600 uppercase font-bold">Zona {activeMatch.zone} · Fecha {activeMatch.round}</span>
-          <span className="flex items-center gap-1 text-[10px] text-red-500 font-black uppercase">
-            <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500" /> EN VIVO
+      <div className="glass" style={{ borderRadius: 0, borderLeft: 'none', borderRight: 'none', borderTop: 'none', padding: '16px', borderBottom: '1px solid var(--ce-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.15em', color: 'var(--ce-fg-4)', textTransform: 'uppercase' }}>Zona {activeMatch.zone} · Fecha {activeMatch.round}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 900, color: 'var(--ce-loss)', textTransform: 'uppercase' }}>
+            <span className="live-dot" style={{ width: 6, height: 6 }} /> EN VIVO
           </span>
         </div>
-        <div className="flex items-center justify-between mt-3">
-          <p className="flex-1 text-sm font-black text-white text-right leading-tight">{activeMatch.home_team?.name}</p>
-          <div className="flex items-center gap-3 px-4">
-            <span className="text-4xl font-black text-white">{activeMatch.home_score}</span>
-            <span className="text-gray-600 text-2xl">—</span>
-            <span className="text-4xl font-black text-white">{activeMatch.away_score}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+          <p style={{ flex: 1, margin: 0, fontSize: 14, fontWeight: 900, color: 'var(--ce-fg)', textAlign: 'right', lineHeight: 1.2 }}>{activeMatch.home_team?.name}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px' }}>
+            <span className="score-glow" style={{ fontSize: 40, fontWeight: 900, color: 'var(--ce-fg)' }}>{activeMatch.home_score}</span>
+            <span style={{ color: 'var(--ce-fg-4)', fontSize: 22, fontWeight: 300 }}>—</span>
+            <span className="score-glow" style={{ fontSize: 40, fontWeight: 900, color: 'var(--ce-fg)' }}>{activeMatch.away_score}</span>
           </div>
-          <p className="flex-1 text-sm font-black text-white leading-tight">{activeMatch.away_team?.name}</p>
+          <p style={{ flex: 1, margin: 0, fontSize: 14, fontWeight: 900, color: 'var(--ce-fg)', lineHeight: 1.2 }}>{activeMatch.away_team?.name}</p>
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="p-4 space-y-3 flex-1">
-        <p className="text-[10px] text-gray-600 uppercase font-bold tracking-wider">
-          {activeMatch.home_team?.name}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          <EventButton
-            label="⚽ Gol"
-            color="green"
-            onClick={() => setEventAction({ type: 'goal', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })}
-          />
-          <EventButton
-            label="🟨 Amarilla"
-            color="yellow"
-            onClick={() => setEventAction({ type: 'yellow', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })}
-          />
-          <EventButton
-            label="🟥 Roja"
-            color="red"
-            onClick={() => setEventAction({ type: 'red', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })}
-          />
+      <div style={{ padding: 16, flex: 1 }}>
+        <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--ce-cyan)' }}>{activeMatch.home_team?.name}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+          <EventButton label="⚽ Gol" color="green" onClick={() => setEventAction({ type: 'goal', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })} />
+          <EventButton label="🟨 Amarilla" color="yellow" onClick={() => setEventAction({ type: 'yellow', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })} />
+          <EventButton label="🟥 Roja" color="red" onClick={() => setEventAction({ type: 'red', teamId: activeMatch.home_team_id, teamName: activeMatch.home_team?.name ?? '' })} />
         </div>
 
-        <div className="border-t border-[#1a1a1a] pt-3" />
+        <div style={{ borderTop: '1px solid var(--ce-divider)', marginBottom: 16 }} />
 
-        <p className="text-[10px] text-gray-600 uppercase font-bold tracking-wider">
-          {activeMatch.away_team?.name}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          <EventButton
-            label="⚽ Gol"
-            color="green"
-            onClick={() => setEventAction({ type: 'goal', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })}
-          />
-          <EventButton
-            label="🟨 Amarilla"
-            color="yellow"
-            onClick={() => setEventAction({ type: 'yellow', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })}
-          />
-          <EventButton
-            label="🟥 Roja"
-            color="red"
-            onClick={() => setEventAction({ type: 'red', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })}
-          />
+        <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--ce-cyan)' }}>{activeMatch.away_team?.name}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <EventButton label="⚽ Gol" color="green" onClick={() => setEventAction({ type: 'goal', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })} />
+          <EventButton label="🟨 Amarilla" color="yellow" onClick={() => setEventAction({ type: 'yellow', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })} />
+          <EventButton label="🟥 Roja" color="red" onClick={() => setEventAction({ type: 'red', teamId: activeMatch.away_team_id, teamName: activeMatch.away_team?.name ?? '' })} />
         </div>
 
-        {/* Events log */}
         {(goals.length > 0 || cards.length > 0) && (
-          <div className="mt-4 bg-[#111] rounded-xl p-3 border border-[#1e1e1e]">
-            <p className="text-[10px] text-gray-600 uppercase font-bold mb-2">Eventos</p>
-            <div className="space-y-1.5 max-h-32 overflow-y-auto">
-              {goals.map((g) => (
-                <div key={g.id} className="flex items-center justify-between text-xs">
-                  <span className="text-green-400">
-                    ⚽ {(g.player as unknown as Player)?.name ?? 'Sin nombre'}
-                    {g.minute ? ` (${g.minute}')` : ''}
-                  </span>
-                  <button onClick={() => removeGoal(g.id).then(() => setGoals((prev) => prev.filter((x) => x.id !== g.id)))}
-                    className="text-gray-700 text-base ml-2">✕</button>
+          <div className="glass" style={{ marginTop: 16, borderRadius: 12, padding: 12 }}>
+            <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--ce-fg-4)' }}>Eventos</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 120, overflowY: 'auto' }}>
+              {goals.map(g => (
+                <div key={g.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: 'var(--ce-win)' }}>⚽ {(g.player as unknown as Player)?.name ?? 'Sin nombre'}{g.minute ? ` (${g.minute}')` : ''}</span>
+                  <button onClick={() => removeGoal(g.id).then(() => setGoals(prev => prev.filter(x => x.id !== g.id)))} style={{ background: 'none', border: 'none', color: 'var(--ce-fg-4)', cursor: 'pointer', fontSize: 14 }}>✕</button>
                 </div>
               ))}
-              {cards.map((c) => (
-                <div key={c.id} className="flex items-center justify-between text-xs">
-                  <span className={c.card_type === 'yellow' ? 'text-[#f5c518]' : 'text-red-500'}>
-                    {c.card_type === 'yellow' ? '🟨' : '🟥'} {(c.player as unknown as Player)?.name ?? 'Sin nombre'}
-                    {c.minute ? ` (${c.minute}')` : ''}
+              {cards.map(c => (
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: c.card_type === 'yellow' ? 'var(--ce-warn)' : 'var(--ce-loss)' }}>
+                    {c.card_type === 'yellow' ? '🟨' : '🟥'} {(c.player as unknown as Player)?.name ?? 'Sin nombre'}{c.minute ? ` (${c.minute}')` : ''}
                   </span>
-                  <button onClick={() => removeCard(c.id).then(() => setCards((prev) => prev.filter((x) => x.id !== c.id)))}
-                    className="text-gray-700 text-base ml-2">✕</button>
+                  <button onClick={() => removeCard(c.id).then(() => setCards(prev => prev.filter(x => x.id !== c.id)))} style={{ background: 'none', border: 'none', color: 'var(--ce-fg-4)', cursor: 'pointer', fontSize: 14 }}>✕</button>
                 </div>
               ))}
             </div>
@@ -408,13 +320,12 @@ export default function ArbitroPage() {
         )}
       </div>
 
-      {/* Close match */}
-      <div className="p-4 pb-20 border-t border-[#1e1e1e]">
-        <button
-          onClick={closeMatch}
-          disabled={loading}
-          className="w-full bg-[#c0392b] text-white font-black py-4 rounded-xl text-base active:scale-95 transition-transform disabled:opacity-50"
-        >
+      <div style={{ padding: '16px 16px 80px', borderTop: '1px solid var(--ce-border)' }}>
+        <button onClick={closeMatch} disabled={loading} className="tap" style={{
+          width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer',
+          background: 'var(--ce-loss)', color: '#fff', fontWeight: 900, fontSize: 15, letterSpacing: '.06em',
+          opacity: loading ? .5 : 1,
+        }}>
           CERRAR PARTIDO ({activeMatch.home_score} - {activeMatch.away_score})
         </button>
       </div>

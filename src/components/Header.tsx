@@ -1,39 +1,51 @@
-import StarLogo from './StarLogo'
+'use client'
+import Image from 'next/image'
+import { useTheme } from './ThemeProvider'
 
 const WHATSAPP_URL = 'https://wa.me/5491134290431'
-const EMAIL = 'rafaciclon2002@yahoo.com.ar'
 
 export default function Header() {
+  const { theme, toggle } = useTheme()
   return (
-    <header className="bg-[#0a0a0a] border-b border-[#1e1e1e] sticky top-0 z-40">
-      <div className="flex items-center justify-between px-4 py-3">
-        {/* Logo + Title */}
-        <div className="flex items-center gap-3">
-          <StarLogo size={40} />
-          <div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest leading-none">Torneo Apertura</p>
-            <h1 className="text-base font-black text-white leading-tight tracking-tight">
-              CAMPEONATO <span className="text-[#f5c518]">ESTRELLA</span>
+    <header className="relative z-40 glass-2 sticky top-0" style={{ borderBottom: '1px solid var(--ce-border)' }}>
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+        background: 'linear-gradient(90deg, transparent, rgba(0,240,255,.7) 40%, rgba(95,251,255,.5) 60%, transparent)',
+      }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+          <div className="ce-logo">
+            <Image src="/logo.png" alt="Estrella" fill unoptimized style={{ objectFit: 'cover', filter: 'hue-rotate(168deg) saturate(1.8) brightness(1.15)' }} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 9, fontWeight: 800, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--ce-cyan-3)', whiteSpace: 'nowrap' }}>
+              Torneo Apertura · Pintita
+            </p>
+            <h1 className="text-grad-title" style={{
+              margin: '2px 0 0', fontSize: 19, fontWeight: 900, lineHeight: 1,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '.03em',
+            }}>
+              CAMPEONATO DE LA ESTRELLA
             </h1>
           </div>
         </div>
 
-        {/* Contacto Rafa */}
-        <a
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 bg-[#25d366] text-white text-xs font-bold px-3 py-2 rounded-full active:scale-95 transition-transform"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        <button onClick={toggle} aria-label="Tema" className="tap" style={{
+          width: 32, height: 32, borderRadius: '50%',
+          border: '1px solid var(--ce-border)', background: 'var(--ce-card)',
+          color: 'var(--ce-fg-3)', fontSize: 14, flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {theme === 'dark' ? '☾' : '☀'}
+        </button>
+
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="ce-wa tap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01s-.52.08-.79.37c-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.57-.35M12.05 21.95h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.64-.23-.38a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.9 6.99c-.01 5.45-4.45 9.89-9.91 9.89" />
           </svg>
-          Rafa
+          RAFA
         </a>
       </div>
-
-      {/* Live matches indicator (placeholder — se puede conectar a Supabase) */}
-      <div id="live-bar" />
     </header>
   )
 }
